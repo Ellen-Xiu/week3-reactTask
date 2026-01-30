@@ -182,8 +182,6 @@ function App() {
         }
       }
       checkLogin(); //呼叫函式驗證登入      
-    } else {
-      alert("請先登入");
     }
 
     //畫面好後才做綁modal DoM元素
