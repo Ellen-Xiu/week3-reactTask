@@ -111,7 +111,7 @@ function App() {
     }
     try {
       const response = await axios[method](url, productData);
-      console.log(response.data);
+      //console.log(response.data);
       //成功取得API後須取得新資料及將modal關閉
       getProducts();
       closeModal();
@@ -123,7 +123,7 @@ function App() {
   const delProduct = async(id) => {
     try {
       const response = await axios.delete(`${API_BASE}/api/${API_PATH}/admin/product/${id}`);
-      console.log(response);
+      //console.log(response);
       getProducts();
       closeModal();
     } catch (error) {
@@ -168,6 +168,22 @@ function App() {
     //確定取得tokon後才將token放到header
     if(token) {
       axios.defaults.headers.common['Authorization'] = token;
+      //取得token處理登入驗證
+      const checkLogin = async() => {
+        try {
+          const response = await axios.post(`${API_BASE}/api/user/check`)
+          console.log(response);
+          //驗證成功後要做的事:畫面狀態改為登入、取得產品
+          setIsAuth(true);
+          getProducts();
+        } catch (error) {
+          console.log(error);
+          alert(`登入失敗訊息:${error.response.data.message}`)
+        }
+      }
+      checkLogin(); //呼叫函式驗證登入      
+    } else {
+      alert("請先登入");
     }
 
     //畫面好後才做綁modal DoM元素
@@ -175,20 +191,7 @@ function App() {
       keyboard: false,
     });
 
-    //處理登入驗證
-    const checkLogin = async() => {
-      try {
-        const response = await axios.post(`${API_BASE}/api/user/check`)
-        console.log(response);
-        //驗證成功後要做的事:畫面狀態改為登入、取得產品
-        setIsAuth(true);
-        getProducts();
-      } catch (error) {
-        console.log(error);
-        alert(`登入失敗訊息:${error.response.data.message}`)
-      }
-    }    
-    checkLogin(); //呼叫函式驗證登入
+
   },[]);
 
   //建立modal打開和關閉方法
@@ -293,8 +296,8 @@ function App() {
                     <div>
                       {tempProduct.imagesUrl.map((item, index) => (
                         <div key={index}>
-                          <label htmlFor="imageLink" className='form-label'>輸入圖片網址</label>
-                          <input type="text" id="imageLink" name="imageLink" placeholder="請輸入圖片連結" className='form-control mb-3' value={item} onChange={(e) => handleModalImageChange(index, e.target.value)}/>
+                          <label htmlFor={`imageLink_${index}`} className='form-label'>輸入圖片網址</label>
+                          <input type="text" id={`imageLink_${index}`} name="imageLink" placeholder="請輸入圖片連結" className='form-control mb-3' value={item} onChange={(e) => handleModalImageChange(index, e.target.value)}/>
                           {item &&<img src={item} alt="副圖" className='mb-3'/>}
                         </div>
                       ))}                                                  
@@ -328,11 +331,11 @@ function App() {
                       <div className='d-flex gap-2 mb-2'>
                         <div className='col-6'>
                           <label htmlFor="origin_price" className='form-label'>原價</label>
-                          <input type="text" id="origin_price" name="origin_price" placeholder="請輸入原價" className='form-control' value={tempProduct.origin_price} onChange={(e) => handleModalInputChange(e)}/>                                       
+                          <input type="number" min="0" id="origin_price" name="origin_price" placeholder="請輸入原價" className='form-control' value={tempProduct.origin_price} onChange={(e) => handleModalInputChange(e)}/>                                       
                         </div>
                         <div className='col-6'>
                           <label htmlFor="price" className='form-label'>售價</label>
-                          <input type="text" id="price" name="price" placeholder="請輸入售價" className='form-control' value={tempProduct.price} onChange={(e) => handleModalInputChange(e)}/>                    
+                          <input type="number" min="0" id="price" name="price" placeholder="請輸入售價" className='form-control' value={tempProduct.price} onChange={(e) => handleModalInputChange(e)}/>                    
                         </div>
                       </div>                    
                     </div>
